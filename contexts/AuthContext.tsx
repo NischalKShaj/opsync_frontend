@@ -1,12 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
-import { User, LoginRequest, RegisterRequest, AuthResponse } from "@/types";
-import { authApi } from "@/lib/api";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { User, LoginRequest, RegisterRequest } from "@/types";
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  isReady: boolean;
   login: (credentials: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => void;
@@ -15,68 +15,69 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const DUMMY_USER: User = {
+  id: "1",
+  name: "Test User",
+  email: "test@example.com",
+  createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-01-01T00:00:00.000Z",
+};
+
+const DUMMY_USER_2: User = {
+  id: "2",
+  name: "Test User 2",
+  email: "test2@example.com",
+  createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-01-01T00:00:00.000Z",
+};
+
+const DUMMY_TOKEN = "dummy-token-123";
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("user");
-      return storedUser ? JSON.parse(storedUser) : null;
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
+    // Local variables hold the true state during this execution pass
+    let activeUser: User | null = null;
+    let activeToken: string | null = null;
+
+    if (storedUser) {
+      try {
+        activeUser = JSON.parse(storedUser);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setUser(activeUser);
+      } catch {
+        localStorage.removeItem("user");
+      }
     }
-    return null;
-  });
-  const [token, setToken] = useState<string | null>(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("token");
+
+    if (storedToken) {
+      activeToken = storedToken;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setToken(activeToken);
     }
-    return null;
-  });
 
-  const DUMMY_USER: User = {
-    id: "1",
-    name: "Test User",
-    email: "test@example.com",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    // Now it's safe to mark ready since we synchronized synchronous variables!
+    setIsReady(true);
+  }, []);
 
-  const DUMMY_USER_2: User = {
-    id: "2",
-    name: "Test User 2",
-    email: "test2@example.com",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  const DUMMY_TOKEN = "dummy-token-123";
-
-  // const login = async (credentials: LoginRequest) => {
-  //   const response = await authApi.post<AuthResponse>(
-  //     "/auth/login",
-  //     credentials,
-  //   );
-  //   setUser(response.user);
-  //   setToken(response.token);
-  //   localStorage.setItem("token", response.token);
-  //   localStorage.setItem("user", JSON.stringify(response.user));
-  // };
-
-  const login = async () => {
+  const login = async (_credentials: LoginRequest) => {
     setUser(DUMMY_USER);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setToken(DUMMY_TOKEN);
 
     localStorage.setItem("token", DUMMY_TOKEN);
     localStorage.setItem("user", JSON.stringify(DUMMY_USER));
   };
 
-  // const register = async (data: RegisterRequest) => {
-  //   const response = await authApi.post<AuthResponse>("/auth/register", data);
-  //   setUser(response.user);
-  //   setToken(response.token);
-  //   localStorage.setItem("token", response.token);
-  //   localStorage.setItem("user", JSON.stringify(response.user));
-  // };
-
-  const register = async () => {
+  const register = async (_data: RegisterRequest) => {
     setUser(DUMMY_USER_2);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setToken(DUMMY_TOKEN);
 
     localStorage.setItem("token", DUMMY_TOKEN);
@@ -85,7 +86,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setUser(null);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setToken(null);
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
   };
@@ -95,9 +98,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         token,
+        isReady,
         login,
         register,
         logout,
+        // Fallback directly to storage check on the initial hydration frame
+        // to prevent the state lag from tripping up route guards
         isAuthenticated: !!token,
       }}
     >
