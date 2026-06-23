@@ -178,6 +178,15 @@
     0 0 40px var(--neon-purple);
 }
 
+/* If using standard CSS / Tailwind layer */
+@layer utilities {
+  .drop-shadow-neon {
+    filter: drop-shadow(-4px 0px 6px rgba(255, 0, 255, 0.4))
+      /* Pink glow on the left */
+      drop-shadow(4px 0px 6px rgba(0, 240, 255, 0.4)); /* Cyan glow on the right */
+  }
+}
+
 .neon-text-pink {
   text-shadow:
     0 0 10px var(--neon-pink),
