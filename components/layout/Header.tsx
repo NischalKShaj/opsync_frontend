@@ -27,13 +27,6 @@ export function Header({
 
   return (
     <header className="relative z-40 bg-[#0f0f1a] dark:bg-[#080810] border-b border-[#2a2a3e] dark:border-[#1a1a2e] py-4 overflow-visible">
-      {/* CRITICAL CHANGE ABOVE: 
-      1. Added `z-40` to elevate the header layer.
-      2. Changed `overflow-hidden` to `overflow-visible`. 
-         If the header is set to overflow-hidden, any dropdown hanging out 
-         of the bottom boundary will be physically cut off or invisible!
-    */}
-
       {/* Animated gradient background */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         {/* Added pointer-events-none so the background layer never blocks clicks */}
@@ -60,6 +53,8 @@ export function Header({
                   <div className="p-4 border-b border-[#2a2a3e] dark:border-[#1a1a2e] flex items-center justify-between bg-gradient-to-r from-[#00f0ff]/10 to-[#ff00ff]/10">
                     <h3 className="font-semibold text-white">Notifications</h3>
                     <button
+                      type="button"
+                      aria-label="Close"
                       onClick={() => setIsOpen(false)}
                       className="text-gray-400 hover:text-[#00f0ff] transition-colors"
                     >

@@ -163,9 +163,19 @@
 
 .neon-text {
   text-shadow:
-    0 0 10px var(--neon-blue),
-    0 0 20px var(--neon-blue),
-    0 0 40px var(--neon-blue);
+    0 0 3px var(--neon-blue),
+    0 0 8px var(--neon-blue),
+    0 0 15px var(--neon-blue);
+}
+
+.neon-text-purple {
+  color: var(--neon-purple);
+
+  text-shadow:
+    0 0 5px var(--neon-purple),
+    0 0 10px var(--neon-purple),
+    0 0 20px var(--neon-purple),
+    0 0 40px var(--neon-purple);
 }
 
 .neon-text-pink {
@@ -230,6 +240,7 @@
 /* Glassmorphism */
 .glass {
   background: rgba(18, 18, 26, 0.8);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 240, 255, 0.2);
 }
