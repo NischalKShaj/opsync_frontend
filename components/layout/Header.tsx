@@ -93,7 +93,7 @@ export function Header({
                 flex
                 items-center
                 justify-center
-                transition-all]
+                transition-all
                 cursor-pointer
                 ${isOpen ? "border-[#00f0ff] shadow-[0_0_10px_rgba(0,240,255,0.2)]" : "border-[#1b1b26] hover:border-[#bf00ff]"}
               `}
@@ -115,6 +115,8 @@ export function Header({
                     Notifications
                   </span>
                   <button
+                    type="button"
+                    aria-label="Close"
                     onClick={() => setIsOpen(false)}
                     className="text-gray-400 hover:text-white"
                   >

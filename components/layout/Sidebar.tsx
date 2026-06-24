@@ -9,7 +9,6 @@ import {
   LogOut,
   Moon,
   Sun,
-  Search,
   ChevronRight,
   HelpCircle,
 } from "lucide-react";
@@ -105,13 +104,17 @@ export function Sidebar() {
         {/* Bottom Section */}
         <div className="mt-auto px-5 pb-5">
           {/* Help */}
-          <button className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors mb-6 cursor-pointer">
+          <button
+            type="button"
+            className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors mb-6 cursor-pointer"
+          >
             <HelpCircle className="w-5 h-5" />
             <span>Help & Support</span>
           </button>
 
           {/* Logout */}
           <button
+            type="button"
             onClick={logout}
             className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition-colors mb-8 cursor-pointer"
           >
@@ -131,7 +134,9 @@ export function Sidebar() {
             </div>
 
             <button
+              type="button"
               onClick={toggleTheme}
+              aria-label="Toggle Theme"
               className={`
         relative
         w-16
