@@ -163,9 +163,28 @@
 
 .neon-text {
   text-shadow:
-    0 0 10px var(--neon-blue),
-    0 0 20px var(--neon-blue),
-    0 0 40px var(--neon-blue);
+    0 0 3px var(--neon-blue),
+    0 0 8px var(--neon-blue),
+    0 0 15px var(--neon-blue);
+}
+
+.neon-text-purple {
+  color: var(--neon-purple);
+
+  text-shadow:
+    0 0 5px var(--neon-purple),
+    0 0 10px var(--neon-purple),
+    0 0 20px var(--neon-purple),
+    0 0 40px var(--neon-purple);
+}
+
+/* If using standard CSS / Tailwind layer */
+@layer utilities {
+  .drop-shadow-neon {
+    filter: drop-shadow(-4px 0px 6px rgba(255, 0, 255, 0.4))
+      /* Pink glow on the left */
+      drop-shadow(4px 0px 6px rgba(0, 240, 255, 0.4)); /* Cyan glow on the right */
+  }
 }
 
 .neon-text-pink {
@@ -227,9 +246,26 @@
   }
 }
 
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 3s ease infinite;
+}
+
 /* Glassmorphism */
 .glass {
   background: rgba(18, 18, 26, 0.8);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 240, 255, 0.2);
 }

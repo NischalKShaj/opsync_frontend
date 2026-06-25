@@ -2,12 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, MessageSquare, Settings, LogOut } from "lucide-react";
+import {
+  Building2,
+  MessageSquare,
+  Settings,
+  LogOut,
+  Moon,
+  Sun,
+  ChevronRight,
+  HelpCircle,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const navItems = [
     { href: "/dashboard", icon: Building2, label: "Workspaces" },
@@ -16,34 +27,53 @@ export function Sidebar() {
   ];
 
   return (
-    <div className="w-64 bg-[#0f0f1a] dark:bg-[#080810] border-r border-[#2a2a3e] dark:border-[#1a1a2e] h-screen flex flex-col relative overflow-hidden">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#00f0ff] via-[#ff00ff] to-[#00ff88] animate-gradient-rotate" />
-      </div>
+    <aside className="w-72 h-screen bg-[#07070c] border-r border-[#1e1e2f] relative flex flex-col overflow-hidden">
+      {/* Ambient Glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(191,0,255,0.12),transparent_40%),radial-gradient(circle_at_bottom,rgba(0,240,255,0.08),transparent_40%)]" />
 
-      <div className="relative z-10">
-        <div className="p-6 border-b border-[#2a2a3e] dark:border-[#1a1a2e]">
-          <h1 className="text-2xl font-bold text-white neon-text">OpSync</h1>
+      <div className="relative z-10 flex flex-col h-full">
+        {/* Logo */}
+        <div className="pt-8 pb-6 flex justify-center relative">
+          <div className="absolute w-40 h-20 bg-[#ff00ff]/20 blur-3xl" />
+
+          <h1
+            className="
+      relative
+      text-5xl
+      font-extrabold
+      bg-gradient-to-b
+      from-white
+      via-[#ff9cff]
+      to-[#ff00ff]
+      bg-clip-text
+      text-transparent
+      drop-shadow-[0_0_10px_rgba(255,0,255,0.8)]
+    "
+          >
+            OpSync
+          </h1>
         </div>
 
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
+        {/* Navigation */}
+        <nav className="px-4">
+          <ul className="space-y-3">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
+
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
-                      isActive
-                        ? "bg-gradient-to-r from-[#00f0ff]/20 to-[#ff00ff]/20 text-[#00f0ff] border border-[#00f0ff]/50 shadow-[0_0_15px_rgba(0,240,255,0.3)]"
-                        : "text-gray-400 hover:text-white hover:bg-white/5 hover:border hover:border-[#00f0ff]/30"
-                    }`}
+                    className={`flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-300
+                  ${
+                    isActive
+                      ? "bg-gradient-to-r from-cyan-500/20 to-pink-500/20 border border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.4)] text-white"
+                      : "text-gray-400 hover:text-white"
+                  }`}
                   >
                     <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
+                    <span>{item.label}</span>
                   </Link>
                 </li>
               );
@@ -51,27 +81,98 @@ export function Sidebar() {
           </ul>
         </nav>
 
-        <div className="p-4 border-t border-[#2a2a3e] dark:border-[#1a1a2e]">
-          <div className="flex items-center gap-3 mb-4 p-3 rounded-lg bg-white/5 border border-[#2a2a3e]">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#00f0ff] to-[#ff00ff] rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.5)]">
-              <span className="text-black font-bold">
+        {/* User Card */}
+        <div className="px-4 mt-8">
+          <div className="bg-white/5 border border-[#2a2a3e] rounded-2xl p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-cyan-500 flex items-center justify-center text-white font-bold">
                 {user?.name?.charAt(0).toUpperCase()}
-              </span>
+              </div>
+
+              <div>
+                <p className="text-white font-semibold text-sm">{user?.name}</p>
+
+                <p className="text-gray-400 text-xs">{user?.email}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-white">{user?.name}</p>
-              <p className="text-xs text-gray-400">{user?.email}</p>
-            </div>
+
+            <ChevronRight className="w-4 h-4 text-gray-400" />
           </div>
+        </div>
+
+        {/* Support */}
+        {/* Bottom Section */}
+        <div className="mt-auto px-5 pb-5">
+          {/* Help */}
           <button
-            onClick={logout}
-            className="flex items-center gap-2 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 hover:border hover:border-[#ff0055]/50 rounded-lg w-full transition-all duration-300 border border-transparent"
+            type="button"
+            className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors mb-6 cursor-pointer"
           >
-            <LogOut className="w-4 h-4" />
-            <span className="font-medium">Logout</span>
+            <HelpCircle className="w-5 h-5" />
+            <span>Help & Support</span>
           </button>
+
+          {/* Logout */}
+          <button
+            type="button"
+            onClick={logout}
+            className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition-colors mb-8 cursor-pointer"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>Logout</span>
+          </button>
+
+          {/* Theme Card */}
+          <div className="border border-[#2a2a3e] rounded-2xl p-3 flex items-center justify-between bg-[#0d0d14]/50 backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-gray-300">
+              {theme === "dark" ? (
+                <Moon className="w-5 h-5 text-cyan-400" />
+              ) : (
+                <Sun className="w-5 h-5 text-yellow-400" />
+              )}
+              <span>Theme</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label="Toggle Theme"
+              className={`
+        relative
+        w-16
+        h-8
+        rounded-full
+        transition-all
+        duration-300
+        border
+        ${
+          theme === "dark"
+            ? "bg-[#12121a] border-cyan-400"
+            : "bg-[#e5e7eb] border-purple-400"
+        }
+      `}
+            >
+              <div
+                className={`
+          absolute
+          top-1
+          w-6
+          h-6
+          rounded-full
+          bg-white
+          transition-all
+          duration-300
+          ${
+            theme === "dark"
+              ? "left-[34px] shadow-[0_0_12px_rgba(0,240,255,0.8)]"
+              : "left-1 shadow-[0_0_12px_rgba(191,0,255,0.5)]"
+          }
+        `}
+              />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }

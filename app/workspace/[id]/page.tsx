@@ -20,6 +20,87 @@ export default function WorkspaceDetailPage() {
   const router = useRouter();
   const workspaceId = params.id as string;
 
+  const MOCK_WORKSPACE: Workspace = {
+    id: "2",
+    name: "Opsync Development",
+    description:
+      "Main development workspace for our backend system infrastructure.",
+    ownerId: "user-1",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  const MOCK_TEAMS: Team[] = [
+    {
+      id: "team-1",
+      name: "Backend Core",
+      workspaceId: "2",
+      description: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "team-2",
+      name: "Frontend UI/UX",
+      workspaceId: "2",
+      description: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+
+  const MOCK_PROJECTS: Project[] = [
+    {
+      id: "proj-1",
+      name: "Opsync Backend",
+      teamId: "team-1",
+      description: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      status: "active",
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString(),
+    },
+    {
+      id: "proj-2",
+      name: "Opsync Frontend",
+      teamId: "team-2",
+      description: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      status: "active",
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString(),
+    },
+  ];
+
+  const MOCK_TASKS: Task[] = [
+    {
+      id: "task-1",
+      title: "Configure Docker Compose for Redis & Postgres",
+      projectId: "proj-1",
+      status: "todo",
+      description: "",
+      priority: "medium",
+      assigneeId: "user-1",
+      dueDate: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "task-2",
+      title: "Fix Layout Hydration Mismatch Errors",
+      projectId: "proj-2",
+      status: "in_progress",
+      description: "",
+      priority: "medium",
+      assigneeId: "user-1",
+      dueDate: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
