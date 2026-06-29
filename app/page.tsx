@@ -1,24 +1,21 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { Navbar } from "@/components/landing/Navbar";
+import { Hero } from "@/components/landing/Hero";
+import { Features } from "@/components/landing/Features";
+import { WhyOpSync } from "@/components/landing/WhyOpSync";
+import { AppPreview } from "@/components/landing/AppPreview";
+import { CTA } from "@/components/landing/CTA";
+import { Footer } from "@/components/landing/Footer";
 
 export default function Home() {
-  const { isAuthenticated } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/dashboard");
-    } else {
-      router.push("/login");
-    }
-  }, [isAuthenticated, router]);
-
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#0a0a0f] dark:bg-[#050508]">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00f0ff]"></div>
+    <div className="min-h-screen bg-[#09090B]">
+      <Navbar />
+      <Hero />
+      <Features />
+      <WhyOpSync />
+      <AppPreview />
+      <CTA />
+      <Footer />
     </div>
   );
 }

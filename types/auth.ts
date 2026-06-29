@@ -2,6 +2,9 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  organizationId: string;
+  role: string;
+  designation: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -12,9 +15,10 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
+  organizationName: string;
+  name: string;
   email: string;
   password: string;
-  name: string;
 }
 
 export interface AuthResponse {

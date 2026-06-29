@@ -19,14 +19,9 @@ const DUMMY_USER: User = {
   id: "1",
   name: "Test User",
   email: "test@example.com",
-  createdAt: "2026-01-01T00:00:00.000Z",
-  updatedAt: "2026-01-01T00:00:00.000Z",
-};
-
-const DUMMY_USER_2: User = {
-  id: "2",
-  name: "Test User 2",
-  email: "test2@example.com",
+  organizationId: "org-1",
+  role: "OrganizationAdmin",
+  designation: "CEO",
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
 };
@@ -75,13 +70,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("user", JSON.stringify(DUMMY_USER));
   };
 
-  const register = async (_data: RegisterRequest) => {
-    setUser(DUMMY_USER_2);
+  const register = async (data: RegisterRequest) => {
+    const newUser: User = {
+      id: "2",
+      name: data.name,
+      email: data.email,
+      organizationId: `org-${Date.now()}`,
+      role: "OrganizationAdmin",
+      designation: "CEO",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setUser(newUser);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setToken(DUMMY_TOKEN);
 
     localStorage.setItem("token", DUMMY_TOKEN);
-    localStorage.setItem("user", JSON.stringify(DUMMY_USER_2));
+    localStorage.setItem("user", JSON.stringify(newUser));
   };
 
   const logout = () => {

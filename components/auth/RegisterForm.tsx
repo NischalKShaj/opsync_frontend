@@ -8,6 +8,7 @@ import { SocialLoginButton } from "@/components/ui/SocialLoginButton";
 import { Loader2 } from "lucide-react";
 
 export function RegisterForm() {
+  const [organizationName, setOrganizationName] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,6 +21,11 @@ export function RegisterForm() {
     e.preventDefault();
     setError("");
 
+    if (!organizationName.trim()) {
+      setError("Organization name is required");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -28,11 +34,11 @@ export function RegisterForm() {
     setIsLoading(true);
 
     try {
-      const data: RegisterRequest = { name, email, password };
+      const data: RegisterRequest = { organizationName, name, email, password };
       await register(data);
       window.location.href = "/dashboard";
     } catch {
-      setError("Registration failed. Please try again.");
+      setError("Organization creation failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -40,6 +46,15 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      <PremiumInput
+        icon="name"
+        label="Organization Name"
+        type="text"
+        value={organizationName}
+        onChange={(e) => setOrganizationName(e.target.value)}
+        placeholder="Enter your organization name"
+        required
+      />
       <PremiumInput
         icon="name"
         label="Full Name"
@@ -102,14 +117,14 @@ export function RegisterForm() {
         {isLoading ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin" />
-            Creating account...
+            Creating organization...
           </>
         ) : (
-          "Create Account"
+          "Create Your Organization"
         )}
       </button>
 
-      <div className="relative">
+      {/* <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-white/10" />
         </div>
@@ -123,7 +138,7 @@ export function RegisterForm() {
       <div className="space-y-3">
         <SocialLoginButton provider="google" />
         <SocialLoginButton provider="microsoft" />
-      </div>
+      </div> */}
     </form>
   );
 }
