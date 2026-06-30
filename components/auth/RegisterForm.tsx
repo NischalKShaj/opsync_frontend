@@ -6,6 +6,7 @@ import { RegisterRequest } from "@/types";
 import { PremiumInput } from "@/components/ui/PremiumInput";
 import { SocialLoginButton } from "@/components/ui/SocialLoginButton";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function RegisterForm() {
   const [organizationName, setOrganizationName] = useState("");
@@ -16,6 +17,7 @@ export function RegisterForm() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,8 +37,9 @@ export function RegisterForm() {
 
     try {
       const data: RegisterRequest = { organizationName, name, email, password };
-      await register(data);
-      window.location.href = "/dashboard";
+      const result = await register(data);
+      console.log(result);
+      router.push("/dashboard");
     } catch {
       setError("Organization creation failed. Please try again.");
     } finally {

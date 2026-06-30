@@ -7,6 +7,7 @@ import { PremiumInput } from "@/components/ui/PremiumInput";
 import { SocialLoginButton } from "@/components/ui/SocialLoginButton";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -15,6 +16,7 @@ export function LoginForm() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,8 +25,9 @@ export function LoginForm() {
 
     try {
       const credentials: LoginRequest = { email, password };
-      await login(credentials);
-      window.location.href = "/dashboard";
+      const data = await login(credentials);
+      console.log(data);
+      router.push("/dashboard");
     } catch {
       setError("Invalid email or password");
     } finally {

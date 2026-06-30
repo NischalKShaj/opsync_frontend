@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { User, LoginRequest, RegisterRequest } from "@/types";
+import { User, LoginRequest, RegisterRequest, AuthResponse } from "@/types";
 
 interface AuthContextType {
   user: User | null;
@@ -14,19 +14,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const DUMMY_USER: User = {
-  id: "1",
-  name: "Test User",
-  email: "test@example.com",
-  organizationId: "org-1",
-  role: "OrganizationAdmin",
-  designation: "CEO",
-  createdAt: "2026-01-01T00:00:00.000Z",
-  updatedAt: "2026-01-01T00:00:00.000Z",
-};
-
-const DUMMY_TOKEN = "dummy-token-123";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -61,38 +48,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsReady(true);
   }, []);
 
-  const login = async (_credentials: LoginRequest) => {
-    setUser(DUMMY_USER);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setToken(DUMMY_TOKEN);
+  const login = async (credentials: LoginRequest) => {
+    const response = await fetch("http://localhost:4000/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
 
-    localStorage.setItem("token", DUMMY_TOKEN);
-    localStorage.setItem("user", JSON.stringify(DUMMY_USER));
+    if (!response.ok) {
+      throw new Error("Login failed");
+    }
+
+    const data: AuthResponse = await response.json();
+    setUser(data.user);
+    setToken(data.token);
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
   };
 
   const register = async (data: RegisterRequest) => {
-    const newUser: User = {
-      id: "2",
-      name: data.name,
-      email: data.email,
-      organizationId: `org-${Date.now()}`,
-      role: "OrganizationAdmin",
-      designation: "CEO",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    const response = await fetch(
+      "http://localhost:4000/auth/create-organization",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      },
+    );
 
-    setUser(newUser);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setToken(DUMMY_TOKEN);
+    if (!response.ok) {
+      throw new Error("Organization creation failed");
+    }
 
-    localStorage.setItem("token", DUMMY_TOKEN);
-    localStorage.setItem("user", JSON.stringify(newUser));
+    const authData: AuthResponse = await response.json();
+    setUser(authData.user);
+    setToken(authData.token);
+
+    localStorage.setItem("token", authData.token);
+    localStorage.setItem("user", JSON.stringify(authData.user));
   };
 
   const logout = () => {
     setUser(null);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setToken(null);
 
     localStorage.removeItem("token");
