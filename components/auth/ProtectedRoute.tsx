@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isReady } = useAuth();
+  const { isAuthenticated, isReady, token } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -15,10 +15,14 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated, isReady, router]);
 
   if (!isReady) {
-    return null;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00f0ff]"></div>
+      </div>
+    );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !token) {
     return null;
   }
 

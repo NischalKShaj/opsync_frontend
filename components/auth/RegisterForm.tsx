@@ -37,8 +37,7 @@ export function RegisterForm() {
 
     try {
       const data: RegisterRequest = { organizationName, name, email, password };
-      const result = await register(data);
-      console.log(result);
+      await register(data);
       router.push("/dashboard");
     } catch {
       setError("Organization creation failed. Please try again.");

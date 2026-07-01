@@ -1,22 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { LoginRequest } from "@/types";
 import { PremiumInput } from "@/components/ui/PremiumInput";
 import { SocialLoginButton } from "@/components/ui/SocialLoginButton";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,8 +25,7 @@ export function LoginForm() {
 
     try {
       const credentials: LoginRequest = { email, password };
-      const data = await login(credentials);
-      console.log(data);
+      await login(credentials);
       router.push("/dashboard");
     } catch {
       setError("Invalid email or password");

@@ -17,7 +17,8 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const auth = useAuth();
+  const { user, logout } = auth;
   const { theme, toggleTheme } = useTheme();
 
   const navItems = [

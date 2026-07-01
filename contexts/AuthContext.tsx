@@ -6,10 +6,11 @@ import { User, LoginRequest, RegisterRequest, AuthResponse } from "@/types";
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  refreshToken: string | null;
   isReady: boolean;
   login: (credentials: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -18,15 +19,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
+    const storedRefreshToken = localStorage.getItem("refreshToken");
 
     // Local variables hold the true state during this execution pass
     let activeUser: User | null = null;
     let activeToken: string | null = null;
+    let activeRefreshToken: string | null = null;
 
     if (storedUser) {
       try {
@@ -42,6 +46,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       activeToken = storedToken;
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setToken(activeToken);
+    }
+
+    if (storedRefreshToken) {
+      activeRefreshToken = storedRefreshToken;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setRefreshToken(activeRefreshToken);
     }
 
     // Now it's safe to mark ready since we synchronized synchronous variables!
@@ -61,12 +71,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error("Login failed");
     }
 
-    const data: AuthResponse = await response.json();
-    setUser(data.user);
-    setToken(data.token);
+    const authData: AuthResponse = await response.json();
+    const user: User = {
+      id: authData.data.user.id || authData.data.user.userId || "",
+      email: authData.data.user.email,
+      name: authData.data.user.name,
+    };
+    setUser(user);
+    setToken(authData.data.accessToken);
+    setRefreshToken(authData.data.refreshToken);
 
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("token", authData.data.accessToken);
+    localStorage.setItem("refreshToken", authData.data.refreshToken);
+    localStorage.setItem("user", JSON.stringify(user));
   };
 
   const register = async (data: RegisterRequest) => {
@@ -86,19 +103,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const authData: AuthResponse = await response.json();
-    setUser(authData.user);
-    setToken(authData.token);
+    const user: User = {
+      id: authData.data.user.id || authData.data.user.userId || "",
+      email: authData.data.user.email,
+      name: authData.data.user.name,
+      organizationId: authData.data.organization?.organizationId,
+    };
+    setUser(user);
+    setToken(authData.data.accessToken);
+    setRefreshToken(authData.data.refreshToken);
 
-    localStorage.setItem("token", authData.token);
-    localStorage.setItem("user", JSON.stringify(authData.user));
+    localStorage.setItem("token", authData.data.accessToken);
+    localStorage.setItem("refreshToken", authData.data.refreshToken);
+    localStorage.setItem("user", JSON.stringify(user));
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
+  const logout = async () => {
+    try {
+      await fetch("http://localhost:4000/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setUser(null);
+      setToken(null);
+      setRefreshToken(null);
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
+    }
   };
 
   return (
@@ -106,6 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         token,
+        refreshToken,
         isReady,
         login,
         register,
