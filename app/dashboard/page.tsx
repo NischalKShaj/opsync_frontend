@@ -58,7 +58,36 @@ export default function DashboardPage() {
   const fetchWorkspaces = useCallback(async () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    setWorkspaces(DUMMY_WORKSPACES);
+    // Check for onboarding data from wizard
+    const onboardingDataStr = localStorage.getItem("onboardingData");
+    if (onboardingDataStr) {
+      try {
+        const onboardingData = JSON.parse(onboardingDataStr);
+
+        // Convert wizard workspaces to Workspace format
+        const wizardWorkspaces: Workspace[] = onboardingData.workspaces.map(
+          (ws: { name: string; description: string }, index: number) => ({
+            id: (index + 1).toString(),
+            name: ws.name,
+            description: ws.description || "",
+            ownerId: "1",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          }),
+        );
+
+        setWorkspaces(wizardWorkspaces);
+
+        // Clear the onboarding data after using it
+        localStorage.removeItem("onboardingData");
+      } catch (error) {
+        console.error("Failed to parse onboarding data:", error);
+        setWorkspaces(DUMMY_WORKSPACES);
+      }
+    } else {
+      setWorkspaces(DUMMY_WORKSPACES);
+    }
+
     setIsLoading(false);
   }, []);
 

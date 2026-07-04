@@ -38,7 +38,9 @@ export function RegisterForm() {
     try {
       const data: RegisterRequest = { organizationName, name, email, password };
       await register(data);
-      router.push("/dashboard");
+      router.push(
+        `/onboarding?orgName=${encodeURIComponent(organizationName)}`,
+      );
     } catch {
       setError("Organization creation failed. Please try again.");
     } finally {
